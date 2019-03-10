@@ -47,7 +47,7 @@ exports.generateThumbnail = functions.storage.object().onFinalize(event => {
       let str = filePath.split('images');
       let newFileName = `${fileName}_${size}_thumb.png`
       let newFileTemp = path.join(os.tmpdir(), newFileName);
-      let newFilePath = `${str[0]}images/thumbs/${newFileName}`
+      let newFilePath = `/thumbs/${newFileName}`
       console.log(newFilePath);
       sharp(tempFilePath)
         .resize(size, null)
