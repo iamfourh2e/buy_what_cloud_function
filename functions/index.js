@@ -12,10 +12,8 @@ const _ = require('lodash');
 const path = require('path');
 const os = require('os');
 const gcs = new Storage();
-exports.generateThumbnail = functions.storage.object().onFinalize(event => {
-  const object = event; // The Storage object.
-  console.log(object.name);
-
+process.env.X_GOOGLE_NEW_FUNCTION_SIGNATURE = 'true'
+exports.generateThumbnail = functions.storage.object().onFinalize(object => {
   const fileBucket = object.bucket; // The Storage bucket that contains the file.
   const filePath = object.name; // File path in the bucket.
   const contentType = object.contentType; // File content type.
@@ -25,12 +23,10 @@ exports.generateThumbnail = functions.storage.object().onFinalize(event => {
   const SIZES = [64,128,256]; // Resize target width in pixels
 
   if (!contentType.startsWith('image/') || resourceState == 'not_exists') {
-    console.log('This is not an image.');
     return;
   }
 
   if (_.includes(filePath, '_thumb')) {
-    console.log('already processed image');
     return;
   }
 
@@ -48,7 +44,6 @@ exports.generateThumbnail = functions.storage.object().onFinalize(event => {
       let newFileName = `${fileName}_${size}_thumb.png`
       let newFileTemp = path.join(os.tmpdir(), newFileName);
       let newFilePath = `/thumbs/${newFileName}`
-      console.log(newFilePath);
       sharp(tempFilePath)
         .resize(size, null)
         .toFile(newFileTemp, (err, info) => {
